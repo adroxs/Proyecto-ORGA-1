@@ -46,7 +46,7 @@ uint8_t calcular_zf(uint64_t res)
     }
 }
 
-/* depende del interruptor SF  */
+/* SF: vale 1 si el resultado es par*/
 uint8_t calcular_sf(uint64_t res)
 {
 
@@ -131,18 +131,18 @@ void psr_imprimir(FILE *f)
 /* Decide si un salto se toma, segun las banderas actuales*/
 int condicion_salto(int cond)
 {
-    if (cond == COND_JMP) {
+    if (cond == JMP) {
         return 1;
     }
-    if (cond == COND_JL) {
+    if (cond == JL) {
         if (flags.SF != flags.OF) return 1;
         else return 0;
     }
-    if (cond == COND_JE) {
+    if (cond == JE) {
         if (flags.ZF == 1) return 1;
         else return 0;
     }
-    if (cond == COND_JNZ) {
+    if (cond == JNZ) {
         if (flags.ZF == 0) return 1;
         else return 0;
     }
@@ -175,12 +175,12 @@ int main(void)
     int total = sizeof(casos) / sizeof(casos[0]);
     int i;
 
-    printf("SF_SEGUN_ENUNCIADO = %d\n\n", SF_SEGUN_ENUNCIADO);
+    printf("SF = 1 cuando el resultado es par (segun el enunciado)\n\n");
 
     for (i = 0; i < total; i++) {
         uint64_t res;
         flags_reset();
-        res = alu_con_flags(casos[i].ifun, casos[i].rA, casos[i].rB);
+        res = alu_flags(casos[i].ifun, casos[i].rA, casos[i].rB);
         printf("%s -> res = 0x%016llX | ", casos[i].nombre, (unsigned long long)res);
         psr_imprimir(stdout);
     }
@@ -188,10 +188,10 @@ int main(void)
     /* Prueba de condiciones de salto con las banderas del ultimo caso */
     printf("\nBanderas actuales: ");
     psr_imprimir(stdout);
-    printf("JMP se toma: %d\n", condicion_salto(COND_JMP));
-    printf("JL  se toma: %d\n", condicion_salto(COND_JL));
-    printf("JE  se toma: %d\n", condicion_salto(COND_JE));
-    printf("JNZ se toma: %d\n", condicion_salto(COND_JNZ));
+    printf("JMP se toma: %d\n", condicion_salto(JMP));
+    printf("JL  se toma: %d\n", condicion_salto(JL));
+    printf("JE  se toma: %d\n", condicion_salto(JE));
+    printf("JNZ se toma: %d\n", condicion_salto(JNZ));
 
     return 0;
 }
